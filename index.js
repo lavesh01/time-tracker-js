@@ -1,46 +1,6 @@
-// CREATING NEW PROJECT 
+const taskComponentArea = document.getElementById("task-component-area");
 
-let newprojectname;
-let selectedValue;
-
-const dropDowmMenu = document.querySelector('.dropdown-menu');
-const myInput = document.querySelector('#newproject-name');
-const selectedProject = document.getElementById('selected-project');
-
-// Modal 
-const projectModal = document.getElementById('projectModal');
-
-if (projectModal) {
-  
-  projectModal.addEventListener('show.bs.modal', event => {
-    myInput.focus();
-
-  })
-
-  const createButton = projectModal.querySelector('.start-btn');
-  createButton.addEventListener('click', (event) => {
-    
-    const modalBodyInput = projectModal.querySelector('.modal-body input');
-    newprojectname= modalBodyInput.value;
-
-    const newProj = document.createElement('li');
-    newProj.innerHTML=`<a class="dropdown-item" data-value="${newprojectname}">${newprojectname}</a>`;
-    dropDowmMenu.appendChild(newProj);
-
-    modalBodyInput.value = "";
-    $('#exampleModal').modal('hide');
-    
-  });
-
-}
-
-dropDowmMenu.addEventListener("click", function(event) {
-  selectedValue = event.target.dataset.value;
-  if(selectedValue){
-    selectedProject.innerText= `● ${selectedValue}`;
-  }
-});
-
+const taskComponents = [];
 
 // Get the current date
 
@@ -57,8 +17,6 @@ const dayOfMonth = currentDate.getDate();
 const year = currentDate.getFullYear();
 
 const dateString = `${dayOfWeek}, ${month} ${dayOfMonth} ${year}`;
-
-const taskComponentArea = document.getElementById("task-component");
 
 
 const inputField = document.querySelector('#task-class');
@@ -95,7 +53,7 @@ startBtn.addEventListener('click', () => {
     timeDisplay.innerText = "00:00:00"; 
     taskComponent();
     
-    taskComponentArea.style.visibility="visible";
+    // taskComponentArea.style.visibility="visible";
   }  
 });  
 
@@ -116,7 +74,7 @@ const taskComponent = () => {
 
   // Update Project Name  
   const taskProjName = document.getElementById('task-project-name');
-  taskProjName.innerText = `● ${selectedValue}`;
+  taskProjName.innerText = `● ${selectedProjValue}`;
   selectedProject.innerText = "";
 
 
@@ -129,8 +87,8 @@ const taskComponent = () => {
 
   // // Update Dollar sign 
   const taskBill = document.querySelector('#task-bill');
-  taskBill.classList.toggle(billColor);
-  dollarBtn.classList.remove("bill-color");
+  taskBill.appendChild(dollarBtn);
+  dollarIcon.innerHTML="<i id='bill' class='fa-regular fa-dollar-sign'></i>";
 
 }  
 
@@ -174,7 +132,7 @@ toggleBtn.addEventListener('click', function() {
   
       clearInterval(timerInterval);
       resumeTime.innerText = "00:00:00";
-      taskComponent();
+      // taskComponent();
   }    
 });  
 
@@ -194,10 +152,10 @@ function formatNumber(number) {
 
 // DOLLAR BILL 
 
+const dollarIcon = document.querySelector(".bill-icon");
 const dollarBtn = document.getElementById("bill");
-dollarBtn.addEventListener('click', () => {
+dollarIcon.addEventListener('click', () => {
   dollarBtn.classList.toggle("bill-color");
-  billColor = dollarBtn.classList.contains("bill-color") ? "bill-color" : "";
 })  
 
 
@@ -264,3 +222,45 @@ tagDropdownMenu.addEventListener('click', function(event) {
 });
 
 
+// CREATING NEW PROJECT 
+
+let newprojectname;
+let selectedProjValue;
+
+const projDropdownMenu = document.querySelector('.dropdown-menu');
+const newProjInput = document.querySelector('#newproject-name');
+const selectedProject = document.getElementById('selected-project');
+
+// Modal 
+const projectModal = document.getElementById('projectModal');
+
+if (projectModal) {
+  
+  projectModal.addEventListener('show.bs.modal', event => {
+    newProjInput.focus();
+
+  })
+
+  const createButton = projectModal.querySelector('.start-btn');
+  createButton.addEventListener('click', (event) => {
+    
+    const modalBodyInput = projectModal.querySelector('.modal-body input');
+    newprojectname= modalBodyInput.value;
+
+    const newProj = document.createElement('li');
+    newProj.innerHTML=`<a class="dropdown-item" data-value="${newprojectname}">${newprojectname}</a>`;
+    projDropdownMenu.appendChild(newProj);
+
+    modalBodyInput.value = "";
+    $('#exampleModal').modal('hide');
+    
+  });
+
+}
+
+projDropdownMenu.addEventListener("click", function(event) {
+  selectedProjValue = event.target.dataset.value;
+  if(selectedProjValue){
+    selectedProject.innerText= `● ${selectedProjValue}`;
+  }
+});

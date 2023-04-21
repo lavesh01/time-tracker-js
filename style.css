@@ -106,14 +106,14 @@
     align-items: center;
 }
 
-#bill {
+.bill-icon {
     font-size: 22px;
     cursor: pointer;
 }
 .bill-color {
     color: #03a9f4;
 }
-#bill:hover{
+.bill-icon:hover{
     color: #03a9f4 
 }
 .tag-icon {
@@ -220,9 +220,15 @@
     align-items: center;
 }
 
-#task-component {
-    visibility: hidden;
+#delete-btn{
+    cursor: pointer;
 }
+
+.checkbox {
+    margin-right: 8px;
+    transform: scale(1.1);
+}
+  
 
 
 /* blue  */
