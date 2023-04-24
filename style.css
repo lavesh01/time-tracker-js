@@ -228,7 +228,50 @@
     margin-right: 8px;
     transform: scale(1.1);
 }
+
+.cross-btn {
+    border: none;
+    padding-left: .2rem;
+    font-size: 0.7rem;
+    background-color: inherit;
+}
+
+.tag-link {
+    cursor: pointer;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    text-decoration: none;
+    color: inherit;
+}
+
+.tag-link:hover {
+    color: #03a9f4;
+}
   
+.dropdown-menu {
+    --bs-dropdown-link-active-bg: none !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* blue  */

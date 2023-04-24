@@ -3,14 +3,11 @@ const resetValues = () => {
   inputField.value= "";
 
   selectedProjValue = "";
-  selectedProject.innerHTML= "";
+  selectedProject.innerText= "";
 
   displayTags.innerHTML = "";
   selectedTagValue = null;
-
-  billColor = "";
 }
-
 
 // Delete a Task 
 
@@ -107,6 +104,7 @@ tagDropdownMenu.addEventListener('click', function(event) {
 });
 
 
+
 // DOLLAR BILL 
 let billColor;
 
@@ -115,6 +113,7 @@ dollarBtn.addEventListener('click', () => {
 dollarBtn.classList.toggle("bill-color");
 billColor = dollarBtn.classList.contains("bill-color") ? "bill-color" : "";
 })  
+
 
 
 // CREATING NEW PROJECT 
@@ -241,17 +240,40 @@ function formatNumber(number) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ARRAY APPROACH ***********************************
+
+
+
 // TIMER 
 const startBtn = document.getElementById("start-btn");
 const toggleText = document.getElementById("toggle-text");
 const timeDisplay = document.getElementById("time-display");
 const displayTags = document.querySelector('#display-tags');
-  
 
 let timerInterval; 
-let inheritedTime;
-let totalTime;
-let resumeTime = "00:00:00";
+let propTime;
+let propTotalTime;
+
+const taskComponents = [];
 
 startBtn.addEventListener('click', () => {
   toggleText.innerText = toggleText.innerText === "Start" ? "Stop" : "Start";
@@ -264,10 +286,10 @@ startBtn.addEventListener('click', () => {
       let formattedTime = formatTime(elapsedTime); 
     
       timeDisplay.innerText = formattedTime; 
-      inheritedTime = formattedTime;      
+      propTime = formattedTime;      
     }, 10);  
   } else {
-    totalTime = inheritedTime;
+    propTotalTime = propTime;
     clearInterval(timerInterval); 
     timeDisplay.innerText = "00:00:00"; 
 
@@ -282,7 +304,8 @@ const inputField = document.querySelector('#task-class');
 let componentCount = 0;
 
 const createTaskComponent = () => {
-  addComponent();
+  const component = addComponent();
+  taskComponentArea.appendChild(component);
   resetValues();
 }
     
@@ -294,13 +317,30 @@ function addComponent() {
   const tagElements = Array.from(displayTags.children);
   const tags = tagElements.map((tag) => tag.textContent);
   
+  // Create an object to store the task component's properties
+  const taskComponent = {
+    id: `task-component-${componentCount}`,
+    taskName: taskName,
+    projectName: selectedProjValue,
+    tags: tags,
+    billColor: billColor,
+    taskComponentTime: {
+      resumeTime: "00:00:00",
+      inheritTaskTime: propTime,
+      totalTime: propTotalTime
+    }
+  };
+  
+  // Add the task component object to the array
+  taskComponents.push(taskComponent);
+  
   const component = document.createElement('div');
-    component.id = `task-component-${componentCount}`;
+    component.id = taskComponent.id;
     component.classList.add("container-fluid","right-side");
     component.innerHTML=`
     <div class="top">
     <div id="date">${dateString}</div>
-        <div id="inherited-time">Total Time: ${totalTime}</div>
+        <div id="inherited-time">Total Time: ${taskComponent.taskComponentTime.totalTime}</div>
     </div>
 
     <hr>
@@ -311,18 +351,18 @@ function addComponent() {
         <div class="left">
         
             <div>
-                <div id="task-name">${taskName}</div>
+                <div id="task-name">${taskComponent.taskName}</div>
             </div>
 
             <div id="task-project-name">
-                ${selectedProjValue ? `●${selectedProjValue}` : ""}
+                ${taskComponent.projectName ? `●${taskComponent.projectName}` : ""}
             </div>
 
             <div id="task-tags" class="tag"> 
             ${tags.map((tag) => `<span class="tags">${tag}</span>`).join("")}
             </div>
 
-            <div id="task-bill" class="${billColor}">
+            <div id="task-bill" class="${taskComponent.billColor}">
           
             <i id="bill" class="fa-regular fa-dollar-sign"></i>
                 
@@ -331,43 +371,52 @@ function addComponent() {
         </div>
         
         <div class="right">
-            <div id="display-resume-time">
-              ${resumeTime} 
-            </div>
-            <div id="resume-btn">
-                <i id="toggle-btn" class="fas fa-regular fa-play"></i>
-            </div>
-            <div id="delete-btn">
-            <i class="fa fa-regular fa-trash-alt" onclick="deleteTask(${componentCount})"></i>
-            </div>
+        <div id="display-resume-time" >
+        ${taskComponent.taskComponentTime.resumeTime} 
         </div>
+        <div id="resume-btn" data-component-id="${taskComponent.id}" >
+        <i id="toggle-btn" class="fa-solid fa-play"></i>
+        </div>
+        <div id="delete-btn">
+        <i class="fa fa-regular fa-trash-alt" onclick="deleteTask(${componentCount})"></i>
+        </div>
+        </div>
+        `;    
+        
+componentCount++;
 
-    </div>
-    `
-
-  const toggleBtn = component.querySelector('#toggle-btn');
-  const displayResumeTime = component.querySelector('#display-resume-time');
-  const resumeBtn = component.querySelector('#resume-btn');
-  const inheritTaskTime = component.querySelector('#inherited-time');
-
-  resumeBtn.addEventListener('click', () => {
-    toggleBtn.className = toggleBtn.className === 'fas fa-regular fa-play' ? 'fas fa-regular fa-stop' : 'fas fa-regular fa-play';
-
+const toggleBtn = component.querySelector('#toggle-btn');
+const displayResumeTime = component.querySelector('#display-resume-time');
+const resumeBtn = component.querySelector('#resume-btn');
+const inheritTaskTime = component.querySelector('#inherited-time');
+  
+        
+resumeBtn.addEventListener('click', (event) => {
+  const clickedComponentId = event.target.parentNode.dataset.componentId;
+  const taskComponent = taskComponents.find((component) => component.id === clickedComponentId);
+  console.log(taskComponent);
+  
+  toggleBtn.className = toggleBtn.className === 'fas fa-regular fa-play' ? 'fas fa-regular fa-stop' : 'fas fa-regular fa-play';
     
     if(toggleBtn.className === 'fas fa-regular fa-stop'){
       let startTime = Date.now(); 
       timerInterval = setInterval(() => {
         let elapsedTime = Date.now() - startTime;
         let formattedTime = formatTime(elapsedTime); 
+
         displayResumeTime.innerText = formattedTime;
-        resumeTime = formattedTime;
+        taskComponent.taskComponentTime.resumeTime = formattedTime;
       }, 10);  
     } else {
-        let resumedTime = resumeTime;
-        console.log("inherited: " + inheritedTime);
-        console.log("resumed: " + resumedTime);
-        const [hours1, minutes1, seconds1] = inheritedTime.split(':').map(Number);
-        const [hours2, minutes2, seconds2] = resumedTime.split(':').map(Number);
+
+        // let resumedTime = resumeTime;
+        let savedResumeTime = taskComponent.taskComponentTime.resumeTime;
+
+        console.log("inherited: " + taskComponent.taskComponentTime.totalTime);
+        console.log("savedresumed: " + savedResumeTime);
+        
+        const [hours1, minutes1, seconds1] = savedResumeTime.split(':').map(Number);
+        const [hours2, minutes2, seconds2] = taskComponent.taskComponentTime.totalTime.split(':').map(Number);
   
         let totalSeconds = seconds1 + seconds2;
         let totalMinutes = minutes1 + minutes2;
@@ -384,25 +433,20 @@ function addComponent() {
         }  
   
         const result = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
-        totalTime = result;
-        inheritedTime = totalTime;
-
-        console.log("TotalTime: " + totalTime);
         
-        inheritTaskTime.innerText = `Total Time: ${totalTime}`;
+        taskComponent.taskComponentTime.totalTime = result;
+        console.log("TotalTime: " + taskComponent.taskComponentTime.totalTime);
+        
+        inheritTaskTime.innerText = `Total Time: ${taskComponent.taskComponentTime.totalTime}`;
 
         clearInterval(timerInterval);
         displayResumeTime.innerText = "00:00:00";
-    }    
-  });  
+      };
 
-    taskComponentArea.appendChild(component);
-    componentCount++;  
     
-  }
-
+  });  
   
-
-
-
+  return component;
+  
+}
 

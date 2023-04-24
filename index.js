@@ -264,3 +264,4 @@ projDropdownMenu.addEventListener("click", function(event) {
     selectedProject.innerText= `● ${selectedProjValue}`;
   }
 });
+
