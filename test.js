@@ -1,4 +1,3 @@
-
 const resetValues = () => {
   inputField.value= "";
 
@@ -9,18 +8,8 @@ const resetValues = () => {
   selectedTagValue = null;
 }
 
-// Delete a Task 
-
-const deleteTask = (taskId) => {
-  const taskComponent = document.getElementById(`task-component-${taskId}`);
-  taskComponent.remove();
-};
-
 // TAGS 
 let selectedTagValue;
-
-// const displayTags = document.querySelector('#display-tags');
-
 const tagDropdownMenu = document.querySelector('#tag-dropdown-menu');
 const tags = []; 
 
@@ -56,7 +45,6 @@ const addNewTag = (tagName) => {
   tagItem.appendChild(tagLink);
   tagDropdownMenu.insertBefore(tagItem, form);
 };
-
 
 const form = document.createElement('form');
 form.classList.add('px-1', 'pt-1');
@@ -103,21 +91,15 @@ tagDropdownMenu.addEventListener('click', function(event) {
   }
 });
 
-
-
 // DOLLAR BILL 
 let billColor;
-
 const dollarBtn = document.getElementById("bill");
 dollarBtn.addEventListener('click', () => {
 dollarBtn.classList.toggle("bill-color");
 billColor = dollarBtn.classList.contains("bill-color") ? "bill-color" : "";
 })  
 
-
-
 // CREATING NEW PROJECT 
-
 let newprojectname;
 let selectedProjValue = "";
 
@@ -158,10 +140,9 @@ createButton.addEventListener('click', (event) => {
   projDropdownMenu.appendChild(newProj);
 
   modalBodyInput.value = "";
-  $('#exampleModal').modal('hide');
+  document.getElementById('projectModal').modal('hide');
   
 });
-
 }
 
 projDropdownMenu.addEventListener("click", function(event) {
@@ -176,23 +157,15 @@ projDropdownMenu.addEventListener("click", function(event) {
   }
 });
 
-
 // Get the current date
-
 const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
 const currentDate = new Date();
-
 const dayOfWeek = daysOfWeek[currentDate.getDay()];
 const month = monthsOfYear[currentDate.getMonth()];
 const dayOfMonth = currentDate.getDate();
-
 const year = currentDate.getFullYear();
-
 const dateString = `${dayOfWeek}, ${month} ${dayOfMonth} ${year}`;
-
 
 function formatTime(milliseconds) {
   let totalSeconds = Math.floor(milliseconds / 1000);
@@ -217,49 +190,6 @@ function formatNumber(number) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ARRAY APPROACH ***********************************
 
 
 
@@ -317,7 +247,6 @@ function addComponent() {
   const tagElements = Array.from(displayTags.children);
   const tags = tagElements.map((tag) => tag.textContent);
   
-  // Create an object to store the task component's properties
   const taskComponent = {
     id: `task-component-${componentCount}`,
     taskName: taskName,
@@ -331,7 +260,6 @@ function addComponent() {
     }
   };
   
-  // Add the task component object to the array
   taskComponents.push(taskComponent);
   
   const component = document.createElement('div');
@@ -371,19 +299,71 @@ function addComponent() {
         </div>
         
         <div class="right">
+       
         <div id="display-resume-time" >
-        ${taskComponent.taskComponentTime.resumeTime} 
+          ${taskComponent.taskComponentTime.resumeTime} 
         </div>
-        <div id="resume-btn" data-component-id="${taskComponent.id}" >
-        <i id="toggle-btn" class="fa-solid fa-play"></i>
+           <div id="resume-btn" data-component-id="${taskComponent.id}" >
+           <i id="toggle-btn" class="fa-solid fa-play"></i>
         </div>
-        <div id="delete-btn">
-        <i class="fa fa-regular fa-trash-alt" onclick="deleteTask(${componentCount})"></i>
+          <div id="delete-btn">
+          <i class="fa fa-regular fa-trash-alt" data-component-id="task-component-${componentCount}" data-target="#deleteModal" data-toggle="modal" ></i>
         </div>
         </div>
-        `;    
+  `;    
         
 componentCount++;
+
+
+// Delete task
+const deleteBtn = component.querySelector('#delete-btn');
+deleteBtn.addEventListener('click', (event) => {
+    const id = event.target.dataset.componentId;
+    const taskComponent = document.getElementById(id);
+
+       const modal = document.createElement('div');
+       modal.id = `deleteModal-${id}`;
+  
+       modal.innerHTML = `
+       <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"  aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="deleteModalLabel">Delete Task</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  Are you sure you want to delete this tasksss?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                  <button type="button" class="btn btn-danger" id="deleteButton">Yess</button>
+                </div>
+              </div>
+            </div>
+        </div> 
+
+  `;
+
+  document.body.appendChild(modal);
+  console.log(modal);
+
+  const deleteTask = modal.querySelector('#deleteButton');
+  deleteTask.addEventListener('click', () => {
+  taskComponent.remove();
+  modal.remove();
+  document.getElementById(`deleteModal-${id}`).classList.remove('show');
+  // document.getElementById(`deleteModal-${id}`).classList.remove("show");
+  // document.body.classList.remove("modal-open");
+  // document.getElementsByClassName("modal-backdrop")[0].remove();
+  });
+
+  const deleteModal = document.getElementById(`deleteModal-${id}`);
+  deleteModal.classList.add('show');
+  })
+
 
 const toggleBtn = component.querySelector('#toggle-btn');
 const displayResumeTime = component.querySelector('#display-resume-time');
@@ -408,8 +388,6 @@ resumeBtn.addEventListener('click', (event) => {
         taskComponent.taskComponentTime.resumeTime = formattedTime;
       }, 10);  
     } else {
-
-        // let resumedTime = resumeTime;
         let savedResumeTime = taskComponent.taskComponentTime.resumeTime;
 
         console.log("inherited: " + taskComponent.taskComponentTime.totalTime);
@@ -442,11 +420,20 @@ resumeBtn.addEventListener('click', (event) => {
         clearInterval(timerInterval);
         displayResumeTime.innerText = "00:00:00";
       };
-
-    
   });  
-  
+
   return component;
-  
+
 }
 
+
+
+
+
+
+
+
+
+
+
+           

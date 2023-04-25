@@ -43,6 +43,11 @@
     background-clip: border-box;
     border: 1px solid #C6D2D9;
     border-bottom: 1px solid #C6D2D9 !important;
+    transition: all ease-in .2s;
+}
+
+.right-side:hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
 }
 
 .input-task {
@@ -188,7 +193,7 @@
     display: flex;
     justify-content: flex-end;
 }
-#resume-time {
+#display-resume-time {
     font-size: 18px;
     font-weight: 500;
 
@@ -253,9 +258,9 @@
     --bs-dropdown-link-active-bg: none !important;
 }
 
-
-
-
+body.modal-open div.modal-backdrop { 
+    z-index: 0 !important; 
+}  
 
 
 

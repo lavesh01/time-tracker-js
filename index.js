@@ -1,6 +1,173 @@
-const taskComponentArea = document.getElementById("task-component-area");
+const resetValues = () => {
+  inputField.value= "";
 
-const taskComponents = [];
+  selectedProjValue = "";
+  selectedProject.innerText= "";
+
+  displayTags.innerHTML = "";
+  selectedTagValue = null;
+}
+
+// TAGS 
+let selectedTagValue;
+
+// const displayTags = document.querySelector('#display-tags');
+
+const tagDropdownMenu = document.querySelector('#tag-dropdown-menu');
+const tags = []; 
+
+const populateTags = () => {
+  tags.forEach(tag => {
+      const tagItem = document.createElement('li');
+      tagItem.classList.add('dropdown-item');
+      tagItem.textContent = tag;
+      tagDropdownMenu.appendChild(tagItem);
+    });
+  
+  tagDropdownMenu.appendChild(form);
+}
+
+const addNewTag = (tagName) => {
+  const tagItem = document.createElement('li');
+  const tagLink = document.createElement('a');
+  const crossBtn = document.createElement('button');
+  
+  tagItem.classList.add('dropdown-item');
+  tagLink.classList.add('tag-link');
+  tagLink.setAttribute('data-value', tagName);
+  tagLink.textContent = tagName;
+  crossBtn.classList.add('cross-btn')
+  crossBtn.innerHTML = '<i class="fa fa-thin fa-xmark"></i>';
+
+  crossBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    tagItem.remove();
+  });
+
+  tagLink.appendChild(crossBtn);
+  tagItem.appendChild(tagLink);
+  tagDropdownMenu.insertBefore(tagItem, form);
+};
+
+
+const form = document.createElement('form');
+form.classList.add('px-1', 'pt-1');
+const input = document.createElement('input');
+input.type = 'text';
+input.placeholder = '● Create New tag';
+input.classList.add('form-control');
+
+input.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+      event.preventDefault();
+      const tagName = input.value.trim();
+      if (tagName.length > 0) {
+        addNewTag(tagName);
+        input.value = '';
+      }
+  }
+});
+form.appendChild(input);
+
+const dropdownToggle = document.querySelector('#tag-dropdown');
+dropdownToggle.addEventListener('click', () => {
+  populateTags();
+});
+
+tagDropdownMenu.addEventListener('click', function(event) {
+  selectedTagValue = event.target.dataset.value;
+
+  if(selectedTagValue) {
+    const newTag = document.createElement('span');
+    newTag.classList.add('tags');
+    newTag.textContent = selectedTagValue;
+
+    const crossBtn = document.createElement('button');
+    crossBtn.classList.add('cross-btn');
+    crossBtn.innerHTML = '<i class="fa fa-thin fa-xmark"></i>';
+
+    crossBtn.addEventListener('click', () => {
+      newTag.remove();
+    });
+
+    newTag.appendChild(crossBtn);
+    displayTags.appendChild(newTag);
+  }
+});
+
+
+
+// DOLLAR BILL 
+let billColor;
+
+const dollarBtn = document.getElementById("bill");
+dollarBtn.addEventListener('click', () => {
+dollarBtn.classList.toggle("bill-color");
+billColor = dollarBtn.classList.contains("bill-color") ? "bill-color" : "";
+})  
+
+
+
+// CREATING NEW PROJECT 
+
+let newprojectname;
+let selectedProjValue = "";
+
+const projDropdownMenu = document.querySelector('.dropdown-menu');
+const newProjInput = document.querySelector('#newproject-name');
+const selectedProject = document.getElementById('selected-project');
+
+// Modal 
+const projectModal = document.getElementById('projectModal');
+
+if (projectModal) {
+
+projectModal.addEventListener('show.bs.modal', event => {
+  newProjInput.focus();
+
+})
+
+const createButton = projectModal.querySelector('.start-btn');
+createButton.addEventListener('click', (event) => {
+  
+  const modalBodyInput = projectModal.querySelector('.modal-body input');
+  newprojectname= modalBodyInput.value;
+
+  const newProj = document.createElement('li');
+  newProj.classList.add('tag-link');
+  newProj.innerHTML=`<a class="dropdown-item" data-value="${newprojectname}">${newprojectname}</a>`;
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.classList.add('cross-btn');
+  deleteBtn.style.marginRight='1rem';
+  deleteBtn.innerHTML = '<i class="fa fa-thin fa-xmark"></i>';
+  deleteBtn.addEventListener('click', () => {
+    newProj.remove();
+  });
+
+  newProj.appendChild(deleteBtn);
+
+  projDropdownMenu.appendChild(newProj);
+
+  modalBodyInput.value = "";
+  $('#exampleModal').modal('hide');
+  
+});
+
+}
+
+projDropdownMenu.addEventListener("click", function(event) {
+  if (event.target.classList.contains('delete-btn')) {
+    event.stopPropagation();
+    event.target.parentNode.remove();
+  } else {
+    selectedProjValue = event.target.dataset.value;
+    if(selectedProjValue){
+      selectedProject.innerText= `● ${selectedProjValue}`;
+    }
+  }
+});
+
 
 // Get the current date
 
@@ -19,124 +186,6 @@ const year = currentDate.getFullYear();
 const dateString = `${dayOfWeek}, ${month} ${dayOfMonth} ${year}`;
 
 
-const inputField = document.querySelector('#task-class');
-const taskName = document.getElementById('task-name');
-
-let billColor;
-
-// TIMER 
-const startBtn = document.getElementById("start-btn");
-const toggleText = document.getElementById("toggle-text");
-const timeDisplay = document.getElementById("time-display");
-
-let timerInterval; 
-let prevTime;
-let totalTime;
-
-startBtn.addEventListener('click', () => {
-  toggleText.innerText = toggleText.innerText === "Start" ? "Stop" : "Start";
-  startBtn.classList.toggle("stop-btn");
-  
-  if (toggleText.innerText === "Stop") {
-    let startTime = Date.now(); 
-    timerInterval = setInterval(() => {
-      let elapsedTime = Date.now() - startTime; 
-      let formattedTime = formatTime(elapsedTime); 
-    
-      timeDisplay.innerText = formattedTime; 
-      prevTime = timeDisplay.innerText;     
-    }, 10);  
-  } else {
-    totalTime = prevTime
-    
-    clearInterval(timerInterval); 
-    timeDisplay.innerText = "00:00:00"; 
-    taskComponent();
-    
-    // taskComponentArea.style.visibility="visible";
-  }  
-});  
-
-
-const taskComponent = () => {
-  // Update TotalTime 
-  const updateTime = document.getElementById("prev-time");
-  updateTime.innerText=`Total Time: ${totalTime}`;
-  
-  // Update Date 
-  const date = document.getElementById('date');
-  date.innerText=dateString;
-
-  // Update Task Name 
-  const inputValue = inputField.value;
-  taskName.append(inputValue);  
-  inputField.value= "";
-
-  // Update Project Name  
-  const taskProjName = document.getElementById('task-project-name');
-  taskProjName.innerText = `● ${selectedProjValue}`;
-  selectedProject.innerText = "";
-
-
-  // Update Tags 
-  taskTags = document.getElementById('task-tags');
-  taskTags.appendChild(displayTags);
-  const mainTags = document.querySelector('#main-tags');
-  mainTags.innerHTML = '';
-
-
-  // // Update Dollar sign 
-  const taskBill = document.querySelector('#task-bill');
-  taskBill.appendChild(dollarBtn);
-  dollarIcon.innerHTML="<i id='bill' class='fa-regular fa-dollar-sign'></i>";
-
-}  
-
-const toggleBtn = document.getElementById('toggle-btn');
-const resumeTime = document.getElementById('resume-time');
-
-toggleBtn.addEventListener('click', function() {
-  toggleBtn.className = toggleBtn.className === 'fas fa-regular fa-play' ? 'fas fa-regular fa-stop' : 'fas fa-regular fa-play';
-
-  if(toggleBtn.className === 'fas fa-regular fa-stop'){
-    let startTime = Date.now(); 
-    timerInterval = setInterval(() => {
-      let elapsedTime = Date.now() - startTime;
-      let formattedTime = formatTime(elapsedTime); 
-      resumeTime.innerText = formattedTime;
-    }, 10);  
-  } else {
-      let resumedTime = resumeTime.innerText;
-      
-      const [hours1, minutes1, seconds1] = prevTime.split(':').map(Number);
-      const [hours2, minutes2, seconds2] = resumedTime.split(':').map(Number);
-
-      let totalSeconds = seconds1 + seconds2;
-      let totalMinutes = minutes1 + minutes2;
-      let totalHours = hours1 + hours2;
-
-      if (totalSeconds >= 60) {
-        totalSeconds -= 60;
-        totalMinutes++;
-      }  
-
-      if (totalMinutes >= 60) {
-        totalMinutes -= 60;
-        totalHours++;
-      }  
-
-      const result = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
-
-      totalTime = result;
-      prevTime = totalTime;
-  
-      clearInterval(timerInterval);
-      resumeTime.innerText = "00:00:00";
-      // taskComponent();
-  }    
-});  
-
-
 function formatTime(milliseconds) {
   let totalSeconds = Math.floor(milliseconds / 1000);
   let hours = Math.floor(totalSeconds / 3600);
@@ -150,118 +199,199 @@ function formatNumber(number) {
 }  
 
 
-// DOLLAR BILL 
 
-const dollarIcon = document.querySelector(".bill-icon");
-const dollarBtn = document.getElementById("bill");
-dollarIcon.addEventListener('click', () => {
-  dollarBtn.classList.toggle("bill-color");
-})  
-
-
-// TAGS 
-let selectedTagValue;
-
+// TIMER 
+const startBtn = document.getElementById("start-btn");
+const toggleText = document.getElementById("toggle-text");
+const timeDisplay = document.getElementById("time-display");
 const displayTags = document.querySelector('#display-tags');
 
-const tagDropdownMenu = document.querySelector('#tag-dropdown-menu');
-const tags = []; 
+let timerInterval; 
+let propTime;
+let propTotalTime;
 
-function populateTags() {
-    tags.forEach(tag => {
-        const tagItem = document.createElement('li');
-        tagItem.classList.add('dropdown-item');
-        tagItem.textContent = tag;
-        tagDropdownMenu.appendChild(tagItem);
-      });
-    
-    tagDropdownMenu.appendChild(form);
-}
+const taskComponents = [];
 
-function addNewTag(tagName) {
-    const tagItem = document.createElement('li');
-    tagItem.innerHTML=`<a class="dropdown-item" data-value='${tagName}' >${tagName}</a>`
-    tagDropdownMenu.insertBefore(tagItem, form); 
-}
-
-const form = document.createElement('form');
-form.classList.add('px-1', 'pt-1');
-const input = document.createElement('input');
-input.type = 'text';
-input.placeholder = '● Create New tag';
-input.classList.add('form-control');
-
-input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        const tagName = input.value.trim();
-        if (tagName.length > 0) {
-          addNewTag(tagName);
-          input.value = '';
-        }
-    }
-});
-
-form.appendChild(input);
-
-const dropdownToggle = document.querySelector('#tag-dropdown');
-dropdownToggle.addEventListener('click', () => {
-    populateTags();
-});
-
-tagDropdownMenu.addEventListener('click', function(event) {
-    selectedTagValue = event.target.dataset.value;
-
-    if(selectedTagValue) {
-      const newTag = document.createElement('span');
-      newTag.classList.add('tags');
-      newTag.textContent = selectedTagValue;
+startBtn.addEventListener('click', () => {
+  toggleText.innerText = toggleText.innerText === "Start" ? "Stop" : "Start";
+  startBtn.classList.toggle("stop-btn");
   
-      displayTags.appendChild(newTag);
-    }
-});
+  if (toggleText.innerText === "Stop") {
+    let startTime = Date.now(); 
+    timerInterval = setInterval(() => {
+      let elapsedTime = Date.now() - startTime; 
+      let formattedTime = formatTime(elapsedTime); 
+    
+      timeDisplay.innerText = formattedTime; 
+      propTime = formattedTime;      
+    }, 10);  
+  } else {
+    propTotalTime = propTime;
+    clearInterval(timerInterval); 
+    timeDisplay.innerText = "00:00:00"; 
 
+    createTaskComponent();
+  }  
 
-// CREATING NEW PROJECT 
+});  
 
-let newprojectname;
-let selectedProjValue;
+const taskComponentArea = document.querySelector('#task-component-area');
+const inputField = document.querySelector('#task-class');
 
-const projDropdownMenu = document.querySelector('.dropdown-menu');
-const newProjInput = document.querySelector('#newproject-name');
-const selectedProject = document.getElementById('selected-project');
+let componentCount = 0;
 
-// Modal 
-const projectModal = document.getElementById('projectModal');
+const createTaskComponent = () => {
+  const component = addComponent();
+  taskComponentArea.appendChild(component);
+  resetValues();
+}
+    
 
-if (projectModal) {
+function addComponent() {
   
-  projectModal.addEventListener('show.bs.modal', event => {
-    newProjInput.focus();
+  const taskName = inputField.value;
+  
+  const tagElements = Array.from(displayTags.children);
+  const tags = tagElements.map((tag) => tag.textContent);
+  
+  // Create an object to store the task component's properties
+  const taskComponent = {
+    id: `task-component-${componentCount}`,
+    taskName: taskName,
+    projectName: selectedProjValue,
+    tags: tags,
+    billColor: billColor,
+    taskComponentTime: {
+      resumeTime: "00:00:00",
+      inheritTaskTime: propTime,
+      totalTime: propTotalTime
+    }
+  };
+  
+  // Add the task component object to the array
+  taskComponents.push(taskComponent);
+  
+  const component = document.createElement('div');
+    component.id = taskComponent.id;
+    component.classList.add("container-fluid","right-side");
+    component.innerHTML=`
+    <div class="top">
+    <div id="date">${dateString}</div>
+        <div id="inherited-time">Total Time: ${taskComponent.taskComponentTime.totalTime}</div>
+    </div>
 
-  })
+    <hr>
 
-  const createButton = projectModal.querySelector('.start-btn');
-  createButton.addEventListener('click', (event) => {
+    <div class="bottom">
+
+        <input type='checkbox' class="checkbox" >
+        <div class="left">
+        
+            <div>
+                <div id="task-name">${taskComponent.taskName}</div>
+            </div>
+
+            <div id="task-project-name">
+                ${taskComponent.projectName ? `●${taskComponent.projectName}` : ""}
+            </div>
+
+            <div id="task-tags" class="tag"> 
+            ${tags.map((tag) => `<span class="tags">${tag}</span>`).join("")}
+            </div>
+
+            <div id="task-bill" class="${taskComponent.billColor}">
+          
+            <i id="bill" class="fa-regular fa-dollar-sign"></i>
+                
+            </div>
+            |
+        </div>
+        
+        <div class="right">
+        <div id="display-resume-time" >
+        ${taskComponent.taskComponentTime.resumeTime} 
+        </div>
+        <div id="resume-btn" data-component-id="${taskComponent.id}" >
+        <i id="toggle-btn" class="fa-solid fa-play"></i>
+        </div>
+        <div id="delete-btn">
+        <i class="fa fa-regular fa-trash-alt" onClick="deleteTask(${componentCount})"></i>
+        </div>
+        </div>
+  `;    
+        
+componentCount++;
+
+const toggleBtn = component.querySelector('#toggle-btn');
+const displayResumeTime = component.querySelector('#display-resume-time');
+const resumeBtn = component.querySelector('#resume-btn');
+const inheritTaskTime = component.querySelector('#inherited-time');
+  
+        
+resumeBtn.addEventListener('click', (event) => {
+  const clickedComponentId = event.target.parentNode.dataset.componentId;
+  const taskComponent = taskComponents.find((component) => component.id === clickedComponentId);
+  console.log(taskComponent);
+  
+  toggleBtn.className = toggleBtn.className === 'fas fa-regular fa-play' ? 'fas fa-regular fa-stop' : 'fas fa-regular fa-play';
     
-    const modalBodyInput = projectModal.querySelector('.modal-body input');
-    newprojectname= modalBodyInput.value;
+    if(toggleBtn.className === 'fas fa-regular fa-stop'){
+      let startTime = Date.now(); 
+      timerInterval = setInterval(() => {
+        let elapsedTime = Date.now() - startTime;
+        let formattedTime = formatTime(elapsedTime); 
 
-    const newProj = document.createElement('li');
-    newProj.innerHTML=`<a class="dropdown-item" data-value="${newprojectname}">${newprojectname}</a>`;
-    projDropdownMenu.appendChild(newProj);
+        displayResumeTime.innerText = formattedTime;
+        taskComponent.taskComponentTime.resumeTime = formattedTime;
+      }, 10);  
+    } else {
 
-    modalBodyInput.value = "";
-    $('#exampleModal').modal('hide');
+        // let resumedTime = resumeTime;
+        let savedResumeTime = taskComponent.taskComponentTime.resumeTime;
+
+        console.log("inherited: " + taskComponent.taskComponentTime.totalTime);
+        console.log("savedresumed: " + savedResumeTime);
+        
+        const [hours1, minutes1, seconds1] = savedResumeTime.split(':').map(Number);
+        const [hours2, minutes2, seconds2] = taskComponent.taskComponentTime.totalTime.split(':').map(Number);
+  
+        let totalSeconds = seconds1 + seconds2;
+        let totalMinutes = minutes1 + minutes2;
+        let totalHours = hours1 + hours2;
+  
+        if (totalSeconds >= 60) {
+          totalSeconds -= 60;
+          totalMinutes++;
+        }  
+  
+        if (totalMinutes >= 60) {
+          totalMinutes -= 60;
+          totalHours++;
+        }  
+  
+        const result = `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`;
+        
+        taskComponent.taskComponentTime.totalTime = result;
+        console.log("TotalTime: " + taskComponent.taskComponentTime.totalTime);
+        
+        inheritTaskTime.innerText = `Total Time: ${taskComponent.taskComponentTime.totalTime}`;
+
+        clearInterval(timerInterval);
+        displayResumeTime.innerText = "00:00:00";
+      };
+
     
-  });
+  });  
+  
+  
+
+  return component;
 
 }
 
-projDropdownMenu.addEventListener("click", function(event) {
-  selectedProjValue = event.target.dataset.value;
-  if(selectedProjValue){
-    selectedProject.innerText= `● ${selectedProjValue}`;
-  }
-});
+// Delete a Task 
 
+const deleteTask = (taskId) => {
+  const taskComponent = document.getElementById(`task-component-${taskId}`);
+  taskComponent.remove();
+};
