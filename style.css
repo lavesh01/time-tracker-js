@@ -135,12 +135,14 @@
     justify-content: flex-end;
     align-items: center;
 }
-.btn {
+/* .btn {
     background-color: #03a9f4 !important;
     color: white !important;
-}
+} */
 
-.start-btn {
+.blue-btn {
+    background-color: #03a9f4 !important;
+    color: white !important;
     border-radius: 0 !important;
     padding: 4px 15px !important;
     margin: 0 15px;
@@ -156,10 +158,13 @@
 .close-btn:hover {
     text-decoration: underline;
 }
-.stop-btn {
+.red-btn {
     background-color: #f40303 !important;
     color: white !important;
     border-radius: 0 !important;
+    padding: 4px 15px !important;
+    margin: 0 15px;
+    border: none;
 }
 .time {
     font-size: 20px;
@@ -207,7 +212,7 @@
     font-size: 15px;
     color: #03a9f4;
 }
-.tags {
+.timer-tags {
     border: 1px solid #b4b4b5;
     display: flex;
     align-items: center;
@@ -219,7 +224,7 @@
     margin-left: 5px;
 }
 
-.tag {
+.timer-tag {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -257,14 +262,6 @@
 .dropdown-menu {
     --bs-dropdown-link-active-bg: none !important;
 }
-
-body.modal-open div.modal-backdrop { 
-    z-index: 0 !important; 
-}  
-
-
-
-
 
 
 

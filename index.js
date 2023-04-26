@@ -50,7 +50,7 @@ const form = document.createElement('form');
 form.classList.add('px-1', 'pt-1');
 const input = document.createElement('input');
 input.type = 'text';
-input.placeholder = '● Create New tag';
+input.placeholder = 'Create New tag';
 input.classList.add('form-control');
 
 input.addEventListener('keydown', (event) => {
@@ -75,7 +75,7 @@ tagDropdownMenu.addEventListener('click', function(event) {
 
   if(selectedTagValue) {
     const newTag = document.createElement('span');
-    newTag.classList.add('tags');
+    newTag.classList.add('timer-tags');
     newTag.textContent = selectedTagValue;
 
     const crossBtn = document.createElement('button');
@@ -112,22 +112,23 @@ const projectModal = document.getElementById('projectModal');
 
 if (projectModal) {
 
-projectModal.addEventListener('show.bs.modal', event => {
+projectModal.addEventListener('show.bs.modal', () => {
   newProjInput.focus();
 
 })
 
-const createButton = projectModal.querySelector('.start-btn');
+const createButton = projectModal.querySelector('#create-btn');
 createButton.addEventListener('click', (event) => {
   
   const modalBodyInput = projectModal.querySelector('.modal-body input');
-  newprojectname= modalBodyInput.value;
-
-  const newProj = document.createElement('li');
-  newProj.classList.add('tag-link');
-  newProj.innerHTML=`<a class="dropdown-item" data-value="${newprojectname}">${newprojectname}</a>`;
-
-  const deleteBtn = document.createElement('button');
+    newprojectname= modalBodyInput.value;
+    
+  if(newprojectname.trim() !== '') {
+    const newProj = document.createElement('li');
+    newProj.classList.add('tag-link');
+    newProj.innerHTML=`<a class="dropdown-item" data-value="${newprojectname}">${newprojectname}</a>`;
+    
+    const deleteBtn = document.createElement('button');
   deleteBtn.classList.add('cross-btn');
   deleteBtn.style.marginRight='1rem';
   deleteBtn.innerHTML = '<i class="fa fa-thin fa-xmark"></i>';
@@ -136,12 +137,12 @@ createButton.addEventListener('click', (event) => {
   });
 
   newProj.appendChild(deleteBtn);
-
-  projDropdownMenu.appendChild(newProj);
-
-  modalBodyInput.value = "";
-  document.getElementById('projectModal').modal('hide');
   
+  projDropdownMenu.appendChild(newProj);
+  
+  modalBodyInput.value = "";
+  // projectModal.modal('hide');
+}
 });
 }
 
@@ -207,7 +208,7 @@ const taskComponents = [];
 
 startBtn.addEventListener('click', () => {
   toggleText.innerText = toggleText.innerText === "Start" ? "Stop" : "Start";
-  startBtn.classList.toggle("stop-btn");
+  startBtn.classList.toggle("red-btn");
   
   if (toggleText.innerText === "Stop") {
     let startTime = Date.now(); 
@@ -286,8 +287,8 @@ function addComponent() {
                 ${taskComponent.projectName ? `●${taskComponent.projectName}` : ""}
             </div>
 
-            <div id="task-tags" class="tag"> 
-            ${tags.map((tag) => `<span class="tags">${tag}</span>`).join("")}
+            <div id="task-tags" class="timer-tag"> 
+            ${tags.map((tag) => `<span class="timer-tags">${tag}</span>`).join("")}
             </div>
 
             <div id="task-bill" class="${taskComponent.billColor}">
@@ -325,25 +326,23 @@ deleteBtn.addEventListener('click', (event) => {
        modal.id = `deleteModal-${id}`;
   
        modal.innerHTML = `
-       <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"  aria-hidden="true">
-            <div class="modal-dialog" role="document">
+          <div class="modal fade" data-backdrop="false" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="deleteModalLabel">Delete Task</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
+                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                   Are you sure you want to delete this tasks?
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                  <button type="button" class="btn btn-danger" id="deleteButton">Yes  </button>
+                  <button type="button" class="blue-btn" data-dismiss="modal">No</button>
+                  <button type="button" class="red-btn" id="deleteButton">Yes</button>
                 </div>
               </div>
             </div>
-        </div> 
+          </div>
 
   `;
 
@@ -354,15 +353,16 @@ deleteBtn.addEventListener('click', (event) => {
   deleteTask.addEventListener('click', () => {
   taskComponent.remove();
   modal.remove();
-  document.getElementById(`deleteModal-${id}`).classList.remove('show');
-  // document.getElementById(`deleteModal-${id}`).classList.remove("show");
-  // document.body.classList.remove("modal-open");
-  // document.getElementsByClassName("modal-backdrop")[0].remove();
+  
+  const deleteModal = document.getElementById(`deleteModal-${id}`);
+  // deleteModal.classList.remove('show');
+  deleteModal.classList.add('hide');
   });
 
   const deleteModal = document.getElementById(`deleteModal-${id}`);
   deleteModal.classList.add('show');
   })
+
 
 
 const toggleBtn = component.querySelector('#toggle-btn');
