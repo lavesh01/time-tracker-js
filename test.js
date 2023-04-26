@@ -335,11 +335,11 @@ deleteBtn.addEventListener('click', (event) => {
                   </button>
                 </div>
                 <div class="modal-body">
-                  Are you sure you want to delete this tasksss?
+                  Are you sure you want to delete this tasks?
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                  <button type="button" class="btn btn-danger" id="deleteButton">Yess</button>
+                  <button type="button" class="btn btn-danger" id="deleteButton">Yes  </button>
                 </div>
               </div>
             </div>
