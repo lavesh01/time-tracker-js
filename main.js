@@ -141,7 +141,7 @@ createButton.addEventListener('click', (event) => {
   projDropdownMenu.appendChild(newProj);
   
   modalBodyInput.value = "";
-  // projectModal.modal('hide');
+  $("projectModal").modal('hide');
 }
 });
 }
@@ -168,6 +168,7 @@ const dayOfMonth = currentDate.getDate();
 const year = currentDate.getFullYear();
 const dateString = `${dayOfWeek}, ${month} ${dayOfMonth} ${year}`;
 
+
 function formatTime(milliseconds) {
   let totalSeconds = Math.floor(milliseconds / 1000);
   let hours = Math.floor(totalSeconds / 3600);
@@ -179,19 +180,6 @@ function formatTime(milliseconds) {
 function formatNumber(number) {
   return number.toString().padStart(2, "0");
 }  
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 // TIMER 
@@ -223,18 +211,30 @@ startBtn.addEventListener('click', () => {
     propTotalTime = propTime;
     clearInterval(timerInterval); 
     timeDisplay.innerText = "00:00:00"; 
-
+  
     createTaskComponent();
   }  
 
 });  
 
-const taskComponentArea = document.querySelector('#task-component-area');
 const inputField = document.querySelector('#task-class');
-
+const taskComponentArea = document.querySelector('#task-component-area');
+const taskWrapper = document.querySelector('#task-wrapper');
 let componentCount = 0;
 
+
 const createTaskComponent = () => {
+
+  let taskDate = taskWrapper.querySelector('.date');
+  if (!taskDate) {
+    let dateArea = document.querySelector('#date-area');
+    taskWrapper.classList.add('task-wrapper');
+    taskDate = document.createElement('div');
+    taskDate.classList.add('date');
+    taskDate.innerText = dateString;
+    dateArea.appendChild(taskDate);
+  }
+  
   const component = addComponent();
   taskComponentArea.appendChild(component);
   resetValues();
@@ -242,7 +242,6 @@ const createTaskComponent = () => {
     
 
 function addComponent() {
-  
   const taskName = inputField.value;
   
   const tagElements = Array.from(displayTags.children);
@@ -265,10 +264,9 @@ function addComponent() {
   
   const component = document.createElement('div');
     component.id = taskComponent.id;
-    component.classList.add("container-fluid","right-side");
+    component.classList.add("task-component");
     component.innerHTML=`
     <div class="top">
-    <div id="date">${dateString}</div>
         <div id="inherited-time">Total Time: ${taskComponent.taskComponentTime.totalTime}</div>
     </div>
 
@@ -308,7 +306,7 @@ function addComponent() {
            <i id="toggle-btn" class="fa-solid fa-play"></i>
         </div>
           <div id="delete-btn">
-          <i class="fa fa-regular fa-trash-alt" data-component-id="task-component-${componentCount}" data-target="#deleteModal" data-toggle="modal" ></i>
+          <i class="fa fa-regular fa-trash-alt" data-component-id="task-component-${componentCount}" data-bs-target="#deleteModal" data-bs-toggle="modal" ></i>
         </div>
         </div>
   `;    
@@ -326,41 +324,39 @@ deleteBtn.addEventListener('click', (event) => {
        modal.id = `deleteModal-${id}`;
   
        modal.innerHTML = `
-          <div class="modal fade" data-backdrop="false" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal fade" data-bs-backdrop="false" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-header">
                   <h5 class="modal-title" id="deleteModalLabel">Delete Task</h5>
-                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                  Are you sure you want to delete this tasks?
+                  Are you sure you want to delete this task?
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="blue-btn" data-dismiss="modal">No</button>
+                  <button type="button" class="blue-btn" data-bs-dismiss="modal">No</button>
                   <button type="button" class="red-btn" id="deleteButton">Yes</button>
                 </div>
               </div>
             </div>
           </div>
-
   `;
 
   document.body.appendChild(modal);
-  console.log(modal);
 
   const deleteTask = modal.querySelector('#deleteButton');
   deleteTask.addEventListener('click', () => {
-  taskComponent.remove();
-  modal.remove();
-  
-  const deleteModal = document.getElementById(`deleteModal-${id}`);
-  // deleteModal.classList.remove('show');
-  deleteModal.classList.add('hide');
-  });
+    taskComponent.remove();
+    modal.remove();
+  // const deleteModal = document.getElementById(`deleteModal-${id}`);
+  // deleteModal.classList.add('hide');
+});
 
-  const deleteModal = document.getElementById(`deleteModal-${id}`);
-  deleteModal.classList.add('show');
+
+
+  // const deleteModal = document.getElementById(`deleteModal-${id}`);
+  // deleteModal.classList.add('show');
   })
 
 
@@ -425,15 +421,3 @@ resumeBtn.addEventListener('click', (event) => {
   return component;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-           
